@@ -1,5 +1,8 @@
 import pyrebase
-from flask import *
+from flask import Flask, render_template, request, make_response,redirect, url_for
+import json
+from time import time
+from random import random
 
 config = {
     "apiKey": "AIzaSyApOH8UDyVn_FAC9swPGH1smcO3Hx0b2-s",
@@ -32,6 +35,21 @@ def index():
             db.child("estado").update({"led" : False})
         return render_template('index.html')
     return render_template('index.html')
+    
+@app.route('/data', methods=['GET', 'POST'])
+def data():
+    sensor = db.child("sensor").child("valor").get()
+    valor = sensor.val()
+    #Temperature = random() * 100
+    #Humidity = random() * 55
+
+    #data = [time() * 1000, Temperature, Humidity]
+    data=[time() * 1000, valor]
+    response = make_response(json.dumps(data))
+
+    response.content_type = 'application/json'
+
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
